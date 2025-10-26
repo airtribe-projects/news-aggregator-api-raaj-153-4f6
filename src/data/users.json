@@ -1,0 +1,53 @@
+[
+  {
+    "id": "1759712823954",
+    "email": "raj2.com",
+    "password": "$2b$10$SBPgwdD0XaoFqyWNeeL5tOWcFs6lDZka1/uAtZixx/2f12DoKan0m",
+    "preferences": {
+      "categories": [],
+      "languages": []
+    }
+  },
+  {
+    "id": "1759712854482",
+    "email": "raj3.com",
+    "password": "$2b$10$S7AU954VRByNop78yCHnGuI2GDGLyvGv3jIvjwdX.7fvZvah4vpRK",
+    "preferences": {
+      "categories": [],
+      "languages": []
+    }
+  },
+  {
+    "id": "1759712925235",
+    "email": "raj4.com",
+    "password": "$2b$10$Wb4IwhHOxERaKwBkLZzY.efN3lo6mLB6nKNEQbFnZ9e3NKYuwmENe",
+    "preferences": {
+      "categories": [],
+      "languages": []
+    }
+  },
+  {
+    "id": "1759713079115",
+    "email": "raj5.com",
+    "password": "$2b$10$9DXB3aSqYj5.b4FsxYD3zu6l3uoIcc.p8NsZJPPomjg64pGTTZNny",
+    "preferences": {
+      "categories": [
+        "news",
+        "sports"
+      ],
+      "languages": [
+        "en",
+        "hi"
+      ]
+    }
+  },
+  {
+    "id": "1759777041466",
+    "email": "abc@123",
+    "password": "$2b$10$EWihTFL2h80kKCw7GNmH5uBXr.N9MUyAJrBSU6QdZhBrmaSt0q5jq",
+    "preferences": {
+      "categories": [],
+      "languages": []
+    }
+  }
+]
