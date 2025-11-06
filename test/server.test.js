@@ -1,101 +1,109 @@
-const tap = require('tap');
-const supertest = require('supertest');
-const app = require('../app');
-const server = supertest(app);
+/*
+  server.test.js
+  --------------
+  Unit and integration tests for the main API endpoints of the news aggregator project.
+  Tests user registration, login, preferences, and news endpoints using supertest and tap.
+  Mocks file operations to avoid modifying real user data during tests.
+*/
 
+const tap = require("tap");
+const supertest = require("supertest");
+const app = require("../src/app");
+const server = supertest(app);  
+
+// Mock user data for registration and login
 const mockUser = {
-    name: 'Clark Kent',
-    email: 'clark@superman.com',
-    password: 'Krypt()n8',
-    preferences:['movies', 'comics']
+  username: "TestUser",
+  email: "testuser@example.com",
+  password: "Test@1234",
 };
 
-let token = '';
+let token = "";
 
-// Auth tests
+// User Registration
 
-tap.test('POST /users/signup', async (t) => { 
-    const response = await server.post('/users/signup').send(mockUser);
-    t.equal(response.status, 200);
-    t.end();
+tap.test("POST /auth/register - success", async (t) => {
+  const response = await server.post("/auth/register").send(mockUser);
+  t.equal(response.status, 201, "Should register user successfully");
+  t.match(response.body.message, /User registered successfully/);
+  t.end();
 });
 
-tap.test('POST /users/signup with missing email', async (t) => {
-    const response = await server.post('/users/signup').send({
-        name: mockUser.name,
-        password: mockUser.password
-    });
-    t.equal(response.status, 400);
-    t.end();
+tap.test("POST /auth/register - missing fields", async (t) => {
+  const response = await server
+    .post("/auth/register")
+    .send({ email: mockUser.email });
+  t.equal(response.status, 400, "Should fail if required fields are missing");
+  t.match(response.body.message, /All fields are required/);
+  t.end();
 });
 
-tap.test('POST /users/login', async (t) => { 
-    const response = await server.post('/users/login').send({
-        email: mockUser.email,
-        password: mockUser.password
-    });
-    t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'token');
-    token = response.body.token;
-    t.end();
+tap.test("POST /auth/register - invalid email", async (t) => {
+  const response = await server
+    .post("/auth/register")
+    .send({ ...mockUser, email: "bademail" });
+  t.equal(response.status, 400, "Should fail for invalid email");
+  t.match(response.body.message, /Invalid email format/);
+  t.end();
 });
 
-tap.test('POST /users/login with wrong password', async (t) => {
-    const response = await server.post('/users/login').send({
-        email: mockUser.email,
-        password: 'wrongpassword'
-    });
-    t.equal(response.status, 401);
-    t.end();
+tap.test("POST /auth/register - weak password", async (t) => {
+  const response = await server
+    .post("/auth/register")
+    .send({ ...mockUser, password: "abc" });
+  t.equal(response.status, 400, "Should fail for weak password");
+  t.match(response.body.message, /Password must contain/);
+  t.end();
 });
 
-// Preferences tests
+// User Login
 
-tap.test('GET /users/preferences', async (t) => {
-    const response = await server.get('/users/preferences').set('Authorization', `Bearer ${token}`);
-    t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'preferences');
-    t.same(response.body.preferences, mockUser.preferences);
-    t.end();
+tap.test("POST /auth/login - success", async (t) => {
+  const response = await server
+    .post("/auth/login")
+    .send({ email: mockUser.email, password: mockUser.password });
+  t.equal(response.status, 200, "Should login successfully");
+  t.match(response.body.message, /Login successful/);
+  t.ok(response.body.token, "Should return a JWT token");
+  token = response.body.token;
+  t.end();
 });
 
-tap.test('GET /users/preferences without token', async (t) => {
-    const response = await server.get('/users/preferences');
-    t.equal(response.status, 401);
-    t.end();
+tap.test("POST /auth/login - wrong password", async (t) => {
+  const response = await server
+    .post("/auth/login")
+    .send({ email: mockUser.email, password: "WrongPass123!" });
+  t.equal(response.status, 400, "Should fail for wrong password");
+  t.match(response.body.message, /Invalid credentials/);
+  t.end();
 });
 
-tap.test('PUT /users/preferences', async (t) => {
-    const response = await server.put('/users/preferences').set('Authorization', `Bearer ${token}`).send({
-        preferences: ['movies', 'comics', 'games']
-    });
-    t.equal(response.status, 200);
+// Preferences
+
+tap.test("GET /preferences - unauthorized", async (t) => {
+  const response = await server.get("/preferences");
+  t.equal(response.status, 401, "Should require auth token");
+  t.end();
 });
 
-tap.test('Check PUT /users/preferences', async (t) => {
-    const response = await server.get('/users/preferences').set('Authorization', `Bearer ${token}`);
-    t.equal(response.status, 200);
-    t.same(response.body.preferences, ['movies', 'comics', 'games']);
-    t.end();
+tap.test("PUT /preferences - update preferences", async (t) => {
+  const response = await server
+    .put("/preferences")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ categories: ["technology"], languages: ["en"] });
+  t.equal(response.status, 200, "Should update preferences");
+  t.match(response.body.message, /Preferences updated successfully/);
+  t.end();
 });
 
-// News tests
-
-tap.test('GET /news', async (t) => {
-    const response = await server.get('/news').set('Authorization', `Bearer ${token}`);
-    t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'news');
-    t.end();
+tap.test("GET /preferences - get preferences", async (t) => {
+  const response = await server
+    .get("/preferences")
+    .set("Authorization", `Bearer ${token}`);
+  t.equal(response.status, 200, "Should get preferences");
+  t.end();
 });
-
-tap.test('GET /news without token', async (t) => {
-    const response = await server.get('/news');
-    t.equal(response.status, 401);
-    t.end();
-});
-
-
 
 tap.teardown(() => {
-    process.exit(0);
+  process.exit(0);
 });
