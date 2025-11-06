@@ -1,3 +1,11 @@
+/*
+  PreferencesController.js
+  -----------------------
+  Handles getting and updating user news preferences (categories, languages).
+  Uses utility functions for reading/writing user data. Includes input validation
+  and error handling for preferences updates.
+*/
+
 const { readUsers, writeUsers } = require("../utils/userFileUtils");
 const path = require("path");
 
@@ -27,7 +35,6 @@ exports.updatePreferences = async (req, res) => {
   try {
     const { categories, languages } = req.body;
 
-    // Input validation
     if (!isValidPreferences(categories, languages)) {
       return res.status(400).json({ message: "Invalid preferences format. 'categories' and 'languages' must be non-empty arrays of strings." });
     }

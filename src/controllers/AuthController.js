@@ -1,3 +1,11 @@
+/*
+  AuthController.js
+  -----------------
+  Handles user registration and login logic, including input validation, password hashing,
+  and JWT token generation. Uses utility functions for reading/writing user data.
+  Provides helper functions for validating email and password strength.
+*/
+
 const { readUsers, writeUsers } = require("../utils/userFileUtils");
 const path = require("path");
 const bcrypt = require("bcryptjs");
@@ -24,43 +32,38 @@ function getPasswordError(password) {
   if (!/[^A-Za-z0-9]/.test(password)) {
     errors.push("a special character");
   }
-  return errors.length
-    ? `Password must contain ${errors.join(", ")}.`
-    : null;
+  return errors.length ? `Password must contain ${errors.join(", ")}.` : null;
 }
 
 function isValidPassword(password) {
-// Password must have at least 1 number, small letter, capital letter and special character and size should be greater than 8. 
- let n = password.length;
- let upperCaseFlag = false;
- let lowerCaseFlag = false;
- let numberFlag = false;
- let specialCharFlag = false;
+  // Password must have at least 1 number, small letter, capital letter and special character and size should be greater than 8.
+  let n = password.length;
+  let upperCaseFlag = false;
+  let lowerCaseFlag = false;
+  let numberFlag = false;
+  let specialCharFlag = false;
 
- for(let i =0; i<n; i++){
-   let char = password.charAt(i);
-    if(char >= '0' && char <= '9'){
-        numberFlag = true;
+  for (let i = 0; i < n; i++) {
+    let char = password.charAt(i);
+    if (char >= "0" && char <= "9") {
+      numberFlag = true;
+    } else if (char >= "a" && char <= "z") {
+      lowerCaseFlag = true;
+    } else if (char >= "A" && char <= "Z") {
+      upperCaseFlag = true;
+    } else {
+      specialCharFlag = true;
     }
-    else if(char >= 'a' && char <= 'z'){
-        lowerCaseFlag = true;
-    }
-    else if(char >= 'A' && char <= 'Z'){
-        upperCaseFlag = true;
-    }
-    else{
-        specialCharFlag = true;
-    }
-}
-    return n >= 8 && upperCaseFlag && lowerCaseFlag && numberFlag && specialCharFlag;
-
+  }
+  return (
+    n >= 8 && upperCaseFlag && lowerCaseFlag && numberFlag && specialCharFlag
+  );
 }
 
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Input validation
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -89,7 +92,9 @@ exports.register = async (req, res) => {
     users.push(newUser);
     await writeUsers(users);
 
-    res.status(201).json({ message: "User registered successfully", data: newUser });
+    res
+      .status(201)
+      .json({ message: "User registered successfully", data: newUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -102,7 +107,9 @@ exports.login = async (req, res) => {
 
     // Input validation
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: "Invalid email format" });

@@ -49,5 +49,25 @@
       "categories": [],
       "languages": []
     }
+  },
+  {
+    "id": "1761502779147",
+    "username": "Raj",
+    "email": "raj@example.com",
+    "password": "$2b$10$G.N/nCZ5CmcB5qjCLBY0J.91hRzUi6I7fVW5I4SV4ePJpqGQoNCFO",
+    "preferences": {
+      "categories": [],
+      "languages": []
+    }
+  },
+  {
+    "id": "1762023484862",
+    "username": "TestUser",
+    "email": "testuser@example.com",
+    "password": "$2b$10$VgLyNiCvS2KINnZlRkyZrOxcZ54emMOx3aCnuoXVdBjW7pVcf0pZS",
+    "preferences": {
+      "categories": [],
+      "languages": []
+    }
   }
 ]

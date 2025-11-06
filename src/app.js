@@ -1,3 +1,11 @@
+/*
+  app.js
+  --------------
+  Sets up the Express application, applies middleware (JSON parsing, CORS),
+  and mounts route handlers for authentication and user preferences.
+  Exports the configured Express app for use in server.js.
+*/
+
 const express = require("express");
 const cors = require("cors");
 

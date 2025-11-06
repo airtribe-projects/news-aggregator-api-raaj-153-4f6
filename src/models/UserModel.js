@@ -1,3 +1,11 @@
+/*
+  UserModel.js
+  ------------
+  Provides functions for managing user data using file-based storage.
+  Exposes methods to find a user by email, add a new user, and get all users.
+  Uses shared utility functions for reading and writing user data.
+*/
+
 const { readUsers, writeUsers } = require("../utils/userFileUtils");
 
 module.exports = {
